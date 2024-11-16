@@ -59,7 +59,7 @@ while running:
 
             # Calculate velocity based on length of drag, we use -1 index since the newest projectile will always be at the end of the projectiles list
             projectiles[-1].velocity = calculate_velocity(pygame.mouse.get_pos(), last_pos)
-            print(projectiles[-1].velocity)
+
 
             drawing = False
 
@@ -89,6 +89,7 @@ while running:
         pygame.draw.circle(screen, BLUE, projectile.position, projectile.radius)
         if projectile.velocity != 0:
             projectile.position = ((projectile.position[0] + projectile.velocity[0]/50), (projectile.position[1] + projectile.velocity[1]/50))
+            projectile.velocity = (projectile.velocity[0] + gravitational_gravity(projectile.position)[0]), (projectile.velocity[1] + gravitational_gravity(projectile.position)[1])
 
     # Flip the display to put your work on the screen
     pygame.display.flip()
