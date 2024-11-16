@@ -1,6 +1,7 @@
 import pygame
 import random
 from models.projectile import Projectile
+from models.planet import Planet
 
 # pygame setup
 pygame.init()
@@ -10,6 +11,9 @@ running = True
 
 # Store the projectile objects
 projectiles = []
+
+# Store the planet objects
+planets = [Planet((400, 300), 50)]
 
 # Colors:
 RED = (255, 0, 0)  # For planets
@@ -29,6 +33,10 @@ while running:
 
     # Fill the screen with a color to wipe away anything from the last frame
     screen.fill("black")
+    
+    # Draw the planets
+    for planet in planets:
+        pygame.draw.circle(screen, RED, planet.position, planet.radius)
 
     # Draw all circles stored in the list
     for projectile in projectiles:
