@@ -93,7 +93,12 @@ while running:
     
     # Draw the planets
     planet = planets[0]
-    pygame.draw.circle(screen, RED, planet.position, planet.radius)
+    pygame.draw.circle(screen, "black", planet.position, planet.radius)
+    my_image = pygame.image.load("pictures/sun.png")
+    my_image = pygame.transform.scale(my_image, (planet.radius*2+10, planet.radius*2+5))
+    circular_image = pygame.Surface((50, 50), pygame.SRCALPHA)
+    image_rect = my_image.get_rect(center=planet.position)
+    screen.blit(my_image, image_rect)
 
     hole = holes[0]
     pygame.draw.circle(screen, "yellow", hole.position, hole.radius)
