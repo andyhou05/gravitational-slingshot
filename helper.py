@@ -32,8 +32,8 @@ def gravitational_acceleration(projectile_position: tuple, planet: Planet):
     if distance == 0:
         return (0, 0)
 
-    G = 1000
-    acc_magnitude = (G * planet.radius) / (distance)** 2
+    G = 6.67*(10**-11)*5.97*(10**24)
+    acc_magnitude = (G) / (distance*100000)** 2
 
     acc_x = -acc_magnitude * (dx / distance)
     acc_y = -acc_magnitude * (dy / distance)
