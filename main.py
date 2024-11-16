@@ -134,7 +134,7 @@ while running:
         # IMAGE CONNECTED TO THE CIRCLE
         pygame.draw.circle(screen,"light blue", projectile.position, projectile.radius)
         my_image = pygame.image.load("pictures/earth.png")
-        my_image = pygame.transform.scale(my_image, (projectile.radius*2, projectile.radius*2))
+        my_image = pygame.transform.scale(my_image, (projectile.radius*2+10, projectile.radius*2+5))
         circular_image = pygame.Surface((50, 50), pygame.SRCALPHA)
         image_rect = my_image.get_rect(center=projectile.position)
         screen.blit(my_image, image_rect, special_flags=pygame.BLEND_RGBA_MIN)
