@@ -4,6 +4,11 @@ from models.projectile import Projectile
 from models.planet import Planet
 from helper import * 
 
+
+
+
+
+
 # pygame setup
 pygame.init()
 screen = pygame.display.set_mode((800, 600))
@@ -13,11 +18,21 @@ running = True
 bg = pygame.image.load("pictures/hackaton_background.png")
 bg = pygame.transform.scale(bg, (800, 600))
 
+# Explosion gif
+explosion = pygame.image.load("pictures/explosion.gif")
+explosion = pygame.transform.scale(explosion, (50, 50))
+
+
 # Store the projectile objects
 projectiles = []
 
 # Store the planet objects
 planets = [Planet((400, 300), 50)]
+
+
+# Store the holes
+holes = [Hole(100,100),20]
+
 
 # Colors:
 RED = (255, 0, 0)  # For planets
@@ -31,7 +46,6 @@ y = 0
 target_x = 0
 target_y = 0
 mouse_position = (0,0)
-
 
 
 
