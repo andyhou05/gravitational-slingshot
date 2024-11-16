@@ -11,9 +11,17 @@ running = True
 # Store the projectile objects
 projectiles = []
 
+
+
+
 # Colors:
 RED = (255, 0, 0)  # For planets
 BLUE = (0, 0, 255) # For user body
+
+# drag effect
+last_pos = None
+drawing = False
+mouse_position =(0,0)
 
 while running:
     # Poll for events
@@ -26,9 +34,27 @@ while running:
             if event.button == 1:  # Left mouse button
                 projectile = Projectile(0, position = pygame.mouse.get_pos(), radius = random.randint(10, 20))
                 projectiles.append(projectile)
+                drawing = True
+                last_pos = pygame.mouse.get_pos()
+        elif event.type == pygame.MOUSEMOTION:
+            if drawing:
+                mouse_position = pygame.mouse.get_pos()
+
+        elif event.type == pygame.MOUSEBUTTONUP:
+            drawing = False
+
+
+
+
+
+
+
 
     # Fill the screen with a color to wipe away anything from the last frame
     screen.fill("black")
+    if drawing == True:
+        if last_pos != pygame.mouse.get_pos():
+            drag_effect = pygame.draw.line(screen, "white", last_pos, mouse_position, 3)
 
     # Draw all circles stored in the list
     for projectile in projectiles:
