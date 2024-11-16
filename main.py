@@ -2,6 +2,7 @@ import pygame
 import random
 from models.projectile import Projectile
 from models.planet import Planet
+from helper import * 
 
 # pygame setup
 pygame.init()
@@ -22,7 +23,7 @@ BLUE = (0, 0, 255) # For user body
 # drag effect
 last_pos = None
 drawing = False
-mouse_position =(0,0)
+mouse_position = ()
 
 while running:
     # Poll for events
@@ -33,15 +34,20 @@ while running:
         # Create a new projectile with every mouse click
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:  # Left mouse button
-                projectile = Projectile(0, position = pygame.mouse.get_pos(), radius = random.randint(10, 20))
+                projectile = Projectile(position = pygame.mouse.get_pos(), radius = random.randint(10, 20))
                 projectiles.append(projectile)
+                
+                # Keep track of the starting position for drag
                 drawing = True
                 last_pos = pygame.mouse.get_pos()
+                
         elif event.type == pygame.MOUSEMOTION:
             if drawing:
                 mouse_position = pygame.mouse.get_pos()
 
         elif event.type == pygame.MOUSEBUTTONUP:
+            # Calculate velocity based on length of drag, we use -1 index since the newest projectile will always be at the end of the projectiles list
+            projectiles[-1].velocity = calculate_velocity(last_pos, pygame.mouse.get_pos())
             drawing = False
 
     # Fill the screen with a color to wipe away anything from the last frame
