@@ -118,8 +118,24 @@ while running:
 
     # Draw the starting zone
     start_position = positions[0]
-    pygame.draw.rect(screen, "Green", (start_position.position[0], start_position.position[1], 200, 150))
+    ellipse_width, ellipse_height = 200, 150
 
+    # Create a transparent surface for the ellipse
+    ellipse_surface = pygame.Surface((ellipse_width, ellipse_height), pygame.SRCALPHA)
+
+    # Draw the ellipse on the transparent surface
+    pygame.draw.ellipse(ellipse_surface, (255, 255, 255, 255), (0, 0, ellipse_width, ellipse_height))
+
+    # Load and scale the image
+    my_image = pygame.image.load("pictures/grass.png")
+    my_image = pygame.transform.scale(my_image, (ellipse_width, ellipse_height))
+
+    # Blit the image onto the ellipse surface
+    ellipse_surface.blit(my_image, (0,0), special_flags=pygame.BLEND_RGBA_MIN)
+
+    # Draw the elliptical image onto the main screen
+    ellipse_rect = ellipse_surface.get_rect(topleft=start_position.position)
+    screen.blit(ellipse_surface, ellipse_rect)
 
     # Draw all circles stored in the list
     for projectile in projectiles:
