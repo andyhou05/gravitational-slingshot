@@ -50,9 +50,11 @@ while running:
             if drawing:
                 mouse_position = pygame.mouse.get_pos()
                 x, y = mouse_position
+                
         elif event.type == pygame.MOUSEBUTTONUP:
             # Calculate velocity based on length of drag, we use -1 index since the newest projectile will always be at the end of the projectiles list
-            projectiles[-1].velocity = calculate_velocity(last_pos, pygame.mouse.get_pos())
+            projectiles[-1].velocity = calculate_velocity(pygame.mouse.get_pos(), last_pos)
+            print(projectiles[-1].velocity)
             drawing = False
 
 
@@ -61,16 +63,16 @@ while running:
     if drawing:
         if last_pos != pygame.mouse.get_pos():
             drag_effect = pygame.draw.line(screen, "white", last_pos, mouse_position, 3)
+            
     elif not drawing:
         if last_pos != mouse_position:
+            # Slingshot animation
             diff_x = target_x - x
             x += diff_x / 3
             diff_y = target_y - y
             y += diff_y / 3
             drag_effect = pygame.draw.line(screen, "white", (x,y), last_pos, 3)
             mouse_position = (round(x),round(y))
-
-
     
     # Draw the planets
     for planet in planets:
@@ -79,6 +81,8 @@ while running:
     # Draw all circles stored in the list
     for projectile in projectiles:
         pygame.draw.circle(screen, BLUE, projectile.position, projectile.radius)
+        if projectile.velocity != 0:
+            projectile.position = ((projectile.position[0] + projectile.velocity[0]/50), (projectile.position[1] + projectile.velocity[1]/50))
 
     # Flip the display to put your work on the screen
     pygame.display.flip()
