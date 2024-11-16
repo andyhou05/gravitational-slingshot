@@ -23,13 +23,13 @@ explosion = pygame.transform.scale(explosion, (50, 50))
 projectiles = []
 
 # Store the planet objects
-planets = [Planet((400, 300), 50),Planet((200,100),50)]
+planets = [Planet((200,100),50),Planet((400, 300), 50)]
 
 # Store the holes
-holes = [Hole((100,100),30),Hole((600,500),30)]
+holes = [Hole((600,500),30),Hole((100,100),30)]
 
 # Store starting positions
-positions = [Start((500, 400)),Start((100,400))]
+positions = [Start((100,400)),Start((500, 400))]
 
 # Colors:
 RED = (255, 0, 0)  # For planets
@@ -60,8 +60,8 @@ while running:
         # Create a new projectile with every mouse click
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:  # Left mouse button
-                if event.pos[0] >= positions[level-1].position[0] and event.pos[0] <= positions[level-1].position[0]+200 and event.pos[1] >= positions[level-1].position[1] and event.pos[1] <= positions[level-1].position[1]+150:
-                    projectile = Projectile(position = pygame.mouse.get_pos(), radius = 15)
+                if event.pos[0] >= positions[0].position[0] and event.pos[0] <= positions[0].position[0]+200 and event.pos[1] >= positions[0].position[1] and event.pos[1] <= positions[0].position[1]+150:
+                    projectile = Projectile(position = pygame.mouse.get_pos(), radius = 25)
                     projectiles.append(projectile)
                     drawing = True
                     last_pos = pygame.mouse.get_pos()
@@ -92,15 +92,15 @@ while running:
     
     
     # Draw the planets
-    planet = planets[level-1]
+    planet = planets[0]
     pygame.draw.circle(screen, RED, planet.position, planet.radius)
 
-    hole = holes[level-1]
+    hole = holes[0]
     pygame.draw.circle(screen, "yellow", hole.position, hole.radius)
 
 
     # Draw the starting zone
-    start_position = positions[level-1]
+    start_position = positions[0]
     pygame.draw.rect(screen, "Green", (start_position.position[0], start_position.position[1], 200, 150))
 
 
@@ -130,18 +130,46 @@ while running:
 
     # Draw all circles stored in the list
     for projectile in projectiles:
-        pygame.draw.circle(screen, BLUE, projectile.position, projectile.radius)
+
+        # IMAGE CONNECTED TO THE CIRCLE
+        pygame.draw.circle(screen,"light blue", projectile.position, projectile.radius)
+        my_image = pygame.image.load("pictures/earth.png")
+        my_image = pygame.transform.scale(my_image, (projectile.radius*2, projectile.radius*2))
+        circular_image = pygame.Surface((50, 50), pygame.SRCALPHA)
+        image_rect = my_image.get_rect(center=projectile.position)
+        screen.blit(my_image, image_rect, special_flags=pygame.BLEND_RGBA_MIN)
+
+
         if projectile.velocity != 0:
             projectile.position = ((projectile.position[0] + projectile.velocity[0]/50), (projectile.position[1] + projectile.velocity[1]/50))
             projectile.velocity = (projectile.velocity[0] + gravitational_acceleration(projectile.position, planets[0])[0]), (projectile.velocity[1] + gravitational_acceleration(projectile.position, planets[0])[1])
         if distance_calc(projectile.position,planet.position) <= projectile.radius + planet.radius:
             projectiles.remove(projectile)
         if distance_calc(projectile.position,hole.position) <= projectile.radius + hole.radius:
-            projectiles.clear()
-            if len(planets) == level:
+
+            if len(planets) == 0:
                 print("u finished")
             else:
+                projectiles.clear()
+                planets.pop(0)
+                holes.pop(0)
+                positions.pop(0)
                 level += 1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     # title of level
     font = pygame.font.SysFont("Arial", 35)
