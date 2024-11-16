@@ -10,6 +10,9 @@ screen = pygame.display.set_mode((800, 600))
 clock = pygame.time.Clock()
 running = True
 
+bg = pygame.image.load("pictures/hackaton_background.png")
+bg = pygame.transform.scale(bg, (800, 600))
+
 # Store the projectile objects
 projectiles = []
 
@@ -66,8 +69,8 @@ while running:
             drawing = False
 
 
-    # Fill the screen with a color to wipe away anything from the last frame
-    screen.fill("black")
+
+    screen.blit(bg,(0,0))
     if drawing:
         if last_pos != pygame.mouse.get_pos():
             drag_effect = pygame.draw.line(screen, "white", last_pos, mouse_position, 3)
