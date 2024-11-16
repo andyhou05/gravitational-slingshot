@@ -21,10 +21,9 @@ while running:
         if event.type == pygame.QUIT:
             running = False
 
-        # Detect mouse click
+        # Create a new projectile with every mouse click
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:  # Left mouse button
-                # Create new projectile
                 projectile = Projectile(0, position = pygame.mouse.get_pos(), radius = random.randint(10, 20))
                 projectiles.append(projectile)
 
