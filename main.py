@@ -27,7 +27,10 @@ x = 0
 y = 0
 target_x = 0
 target_y = 0
-mouse_position = ()
+mouse_position = (0,0)
+
+
+
 
 while running:
     # Poll for events
@@ -44,6 +47,7 @@ while running:
                 # Keep track of the starting position for drag
                 drawing = True
                 last_pos = pygame.mouse.get_pos()
+                mouse_position = pygame.mouse.get_pos()
                 target_x, target_y = last_pos
 
         elif event.type == pygame.MOUSEMOTION:
@@ -52,9 +56,11 @@ while running:
                 x, y = mouse_position
                 
         elif event.type == pygame.MOUSEBUTTONUP:
+
             # Calculate velocity based on length of drag, we use -1 index since the newest projectile will always be at the end of the projectiles list
             projectiles[-1].velocity = calculate_velocity(pygame.mouse.get_pos(), last_pos)
             print(projectiles[-1].velocity)
+
             drawing = False
 
 
