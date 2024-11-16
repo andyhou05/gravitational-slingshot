@@ -1,7 +1,7 @@
 import pygame
-import random
 from models.projectile import Projectile
 from models.planet import Planet
+from models.holes import Hole
 from helper import * 
 
 
@@ -27,11 +27,11 @@ explosion = pygame.transform.scale(explosion, (50, 50))
 projectiles = []
 
 # Store the planet objects
-planets = [Planet((400, 300), 50)]
+planets = [Planet((400, 300), 50),Planet((200,100),50)]
 
 
 # Store the holes
-holes = [Hole(100,100),20]
+holes = [Hole((100,100),30),Hole((600,500),30)]
 
 
 # Colors:
@@ -47,7 +47,14 @@ target_x = 0
 target_y = 0
 mouse_position = (0,0)
 
+# Level_counter
+level = 0
 
+
+# TITLE (level counter)
+font = pygame.font.SysFont("Arial", 35)
+text = f"Level {level}"
+text_surface = font.render(text,True,"white")
 
 while running:
     # Poll for events
@@ -100,8 +107,11 @@ while running:
             mouse_position = (round(x),round(y))
     
     # Draw the planets
-    for planet in planets:
-        pygame.draw.circle(screen, RED, planet.position, planet.radius)
+    planet = planets[level]
+    pygame.draw.circle(screen, RED, planet.position, planet.radius)
+
+    hole = holes[level]
+    pygame.draw.circle(screen, "yellow", hole.position, hole.radius)
 
     # Draw all circles stored in the list
     for projectile in projectiles:
@@ -109,9 +119,18 @@ while running:
         if projectile.velocity != 0:
             projectile.position = ((projectile.position[0] + projectile.velocity[0]/50), (projectile.position[1] + projectile.velocity[1]/50))
             projectile.velocity = (projectile.velocity[0] + gravitational_acceleration(projectile.position, planets[0])[0]), (projectile.velocity[1] + gravitational_acceleration(projectile.position, planets[0])[1])
-        if distance_calc(projectile.position) <= projectile.radius + 50:
+        if distance_calc(projectile.position,planet.position) <= projectile.radius + planet.radius:
             projectiles.remove(projectile)
+        if distance_calc(projectile.position,hole.position) <= projectile.radius + hole.radius:
+            projectiles.clear()
+            if len(planets)-1 == level:
+                level = 0
+            else:
 
+                level += 1
+
+    # title of level
+    screen.blit(text_surface,(350,50))
 
     # Flip the display to put your work on the screen
     pygame.display.flip()

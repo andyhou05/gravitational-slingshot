@@ -14,11 +14,12 @@ def calculate_velocity(start_position: tuple, end_position: tuple):
 
     return (x2 - x1, y2 -y1)
 
-def distance_calc(start_position: tuple):
+def distance_calc(start_position: tuple,end_position : tuple):
     # USED TO GET DISTANCE ONLY, NOT THE ACCELERATION
     x, y = start_position
-    dx = x - 400
-    dy = y - 300
+    x1,y1 = end_position
+    dx = x - x1
+    dy = y - y1
     return math.sqrt(dx ** 2 + dy ** 2)
 
 def gravitational_acceleration(projectile_position: tuple, planet: Planet):
