@@ -3,11 +3,8 @@ import random
 from models.projectile import Projectile
 from models.planet import Planet
 from helper import * 
-
-
-
-
-
+from models.holes import Hole
+from models.start import Start
 
 # pygame setup
 pygame.init()
@@ -22,17 +19,17 @@ bg = pygame.transform.scale(bg, (800, 600))
 explosion = pygame.image.load("pictures/explosion.gif")
 explosion = pygame.transform.scale(explosion, (50, 50))
 
-
 # Store the projectile objects
 projectiles = []
 
 # Store the planet objects
 planets = [Planet((400, 300), 50)]
 
-
 # Store the holes
 holes = [Hole(100,100),20]
 
+# Store starting positions
+positions = [Start((500, 400))]
 
 # Colors:
 RED = (255, 0, 0)  # For planets
@@ -85,6 +82,25 @@ while running:
 
 
     screen.blit(bg,(0,0))
+    
+    
+    # Draw the planets
+    for planet in planets:
+        pygame.draw.circle(screen, RED, planet.position, planet.radius)
+        
+    # Draw the starting zone
+    start_position = positions[0].position
+    pygame.draw.rect(screen, "Green", (start_position[0], start_position[1], 200, 150))
+
+    # Draw all circles stored in the list
+    for projectile in projectiles:
+        pygame.draw.circle(screen, BLUE, projectile.position, projectile.radius)
+        if projectile.velocity != 0:
+            projectile.position = ((projectile.position[0] + projectile.velocity[0]/50), (projectile.position[1] + projectile.velocity[1]/50))
+            projectile.velocity = (projectile.velocity[0] + gravitational_acceleration(projectile.position, planets[0])[0]), (projectile.velocity[1] + gravitational_acceleration(projectile.position, planets[0])[1])
+        if distance_calc(projectile.position) <= projectile.radius + 50:
+            projectiles.remove(projectile)
+
     if drawing:
         if last_pos != pygame.mouse.get_pos():
             drag_effect = pygame.draw.line(screen, "white", last_pos, mouse_position, 3)
@@ -98,20 +114,6 @@ while running:
             y += diff_y / 3
             drag_effect = pygame.draw.line(screen, "white", (x,y), last_pos, 3)
             mouse_position = (round(x),round(y))
-    
-    # Draw the planets
-    for planet in planets:
-        pygame.draw.circle(screen, RED, planet.position, planet.radius)
-
-    # Draw all circles stored in the list
-    for projectile in projectiles:
-        pygame.draw.circle(screen, BLUE, projectile.position, projectile.radius)
-        if projectile.velocity != 0:
-            projectile.position = ((projectile.position[0] + projectile.velocity[0]/50), (projectile.position[1] + projectile.velocity[1]/50))
-            projectile.velocity = (projectile.velocity[0] + gravitational_acceleration(projectile.position, planets[0])[0]), (projectile.velocity[1] + gravitational_acceleration(projectile.position, planets[0])[1])
-        if distance_calc(projectile.position) <= projectile.radius + 50:
-            projectiles.remove(projectile)
-
 
     # Flip the display to put your work on the screen
     pygame.display.flip()
