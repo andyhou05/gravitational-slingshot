@@ -8,6 +8,7 @@ from models.start import Start
 # pygame setup
 pygame.init()
 screen = pygame.display.set_mode((800, 600))
+pygame.display.set_caption("Space Putt")
 clock = pygame.time.Clock()
 running = True
 
@@ -28,7 +29,7 @@ planets = [Planet((400, 300), 50),Planet((200,100),50)]
 holes = [Hole((100,100),30),Hole((600,500),30)]
 
 # Store starting positions
-positions = [Start((500, 400))]
+positions = [Start((500, 400)),Start((100,400))]
 
 # Colors:
 RED = (255, 0, 0)  # For planets
@@ -47,7 +48,7 @@ mouse_position = (0,0)
 level = 1
 
 
-# TITLE (level counter)
+
 
 
 while running:
@@ -59,14 +60,16 @@ while running:
         # Create a new projectile with every mouse click
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:  # Left mouse button
-                projectile = Projectile(position = pygame.mouse.get_pos(), radius = 15)
-                projectiles.append(projectile)
+                if event.pos[0] >= positions[level-1].position[0] and event.pos[0] <= positions[level-1].position[0]+200 and event.pos[1] >= positions[level-1].position[1] and event.pos[1] <= positions[level-1].position[1]+150:
+                    projectile = Projectile(position = pygame.mouse.get_pos(), radius = 15)
+                    projectiles.append(projectile)
+                    drawing = True
+                    last_pos = pygame.mouse.get_pos()
+                    mouse_position = pygame.mouse.get_pos()
+                    target_x, target_y = last_pos
                 
-                # Keep track of the starting position for drag
-                drawing = True
-                last_pos = pygame.mouse.get_pos()
-                mouse_position = pygame.mouse.get_pos()
-                target_x, target_y = last_pos
+
+
 
         elif event.type == pygame.MOUSEMOTION:
             if drawing:
@@ -97,8 +100,8 @@ while running:
 
 
     # Draw the starting zone
-    start_position = positions[0].position
-    pygame.draw.rect(screen, "Green", (start_position[0], start_position[1], 200, 150))
+    start_position = positions[level-1]
+    pygame.draw.rect(screen, "Green", (start_position.position[0], start_position.position[1], 200, 150))
 
 
     # Draw all circles stored in the list
