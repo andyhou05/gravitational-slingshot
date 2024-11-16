@@ -4,6 +4,18 @@ from models.planet import Planet
 from models.holes import Hole
 from helper import *
 from models.start import Start
+import sqlite3
+
+key = "Leaderboard.db"
+
+connexion = sqlite3.connect(key)
+cursor = connexion.cursor()
+cursor.execute("CREATE TABLE IF NOT EXISTS leaderboard(id INTEGER PRIMARY KEY, nom TEXT, time FLOAT)")
+connexion.commit()
+connexion.close()
+
+
+
 
 # pygame setup
 pygame.init()
@@ -135,9 +147,9 @@ while running:
         pygame.draw.circle(screen,"light blue", projectile.position, projectile.radius)
         my_image = pygame.image.load("pictures/earth.png")
         my_image = pygame.transform.scale(my_image, (projectile.radius*2+10, projectile.radius*2+5))
-        circular_image = pygame.Surface((50, 50), pygame.SRCALPHA)
+        circular_image = pygame.Surface((1, 1), pygame.SRCALPHA)
         image_rect = my_image.get_rect(center=projectile.position)
-        screen.blit(my_image, image_rect, special_flags=pygame.BLEND_RGBA_MIN)
+        screen.blit(my_image, image_rect)
 
 
         if projectile.velocity != 0:
@@ -145,9 +157,11 @@ while running:
             projectile.velocity = (projectile.velocity[0] + gravitational_acceleration(projectile.position, planets[0])[0]), (projectile.velocity[1] + gravitational_acceleration(projectile.position, planets[0])[1])
         if distance_calc(projectile.position,planet.position) <= projectile.radius + planet.radius:
             projectiles.remove(projectile)
+        if projectile.position[0] >= 850 or projectile.position[0] <= -50 or projectile.position[1] >= 650 or projectile.position[1] <=-50:
+            projectiles.remove(projectile)
         if distance_calc(projectile.position,hole.position) <= projectile.radius + hole.radius:
 
-            if len(planets) == 0:
+            if len(planets) == 1:
                 print("u finished")
             else:
                 projectiles.clear()
