@@ -20,9 +20,13 @@ RED = (255, 0, 0)  # For planets
 BLUE = (0, 0, 255) # For user body
 
 # drag effect
-last_pos = None
+last_pos = (0,0)
 drawing = False
 mouse_position =(0,0)
+x = 0
+y = 0
+target_x = 0
+target_y = 0
 
 while running:
     # Poll for events
@@ -37,18 +41,29 @@ while running:
                 projectiles.append(projectile)
                 drawing = True
                 last_pos = pygame.mouse.get_pos()
+                target_x, target_y = last_pos
         elif event.type == pygame.MOUSEMOTION:
             if drawing:
                 mouse_position = pygame.mouse.get_pos()
-
+                x, y = mouse_position
         elif event.type == pygame.MOUSEBUTTONUP:
             drawing = False
+
 
     # Fill the screen with a color to wipe away anything from the last frame
     screen.fill("black")
     if drawing:
         if last_pos != pygame.mouse.get_pos():
             drag_effect = pygame.draw.line(screen, "white", last_pos, mouse_position, 3)
+    elif not drawing:
+        if last_pos != mouse_position:
+            diff_x = target_x - x
+            x += diff_x / 3
+            diff_y = target_y - y
+            y += diff_y / 3
+            drag_effect = pygame.draw.line(screen, "white", (x,y), last_pos, 3)
+            mouse_position = (round(x),round(y))
+
 
     
     # Draw the planets
