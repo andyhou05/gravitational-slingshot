@@ -1,4 +1,5 @@
 import math
+from models.planet import Planet
 
 ## Fg = Gm1m2/r**2
 
@@ -20,19 +21,18 @@ def distance_calc(start_position: tuple):
     dy = y - 300
     return math.sqrt(dx ** 2 + dy ** 2)
 
-def gravitational_gravity(start_position: tuple):
-    x, y = start_position
-    dx = x - 400
-    dy = y - 300
+def gravitational_acceleration(projectile_position: tuple, planet: Planet):
+    x_projectile, y_projectile = projectile_position
+    x_planet, y_planet = planet.position
+    dx = x_projectile - x_planet
+    dy = y_projectile - y_planet
     distance = math.sqrt(dx ** 2 + dy ** 2)
-
 
     if distance == 0:
         return (0, 0)
 
-    G = 6.67*10**-11 * 5.972*(10**24)
-    acc_magnitude = G / (distance*100000)** 2
-
+    G = 1000
+    acc_magnitude = (G * planet.radius) / (distance)** 2
 
     acc_x = -acc_magnitude * (dx / distance)
     acc_y = -acc_magnitude * (dy / distance)
