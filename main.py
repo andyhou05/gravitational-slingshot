@@ -1,6 +1,7 @@
 import pygame
 from models.projectile import Projectile
 from models.planet import Planet
+from models.obstacles import Obstacle
 from models.holes import Hole
 from helper import *
 from models.start import Start
@@ -195,6 +196,13 @@ planets = [Planet((200,100),50),
            Planet((400, 200), 50),
            Planet((250, 270), 30),]
 
+# Store the obstacles:
+obstacles = [Obstacle((0,0), (0,0)),
+             Obstacle((0, 0), (0, 0)),
+             Obstacle((400, 260), (400, 600)),
+             Obstacle((290, 270), (800, 270))
+             ]
+
 # Store the holes
 holes = [Hole((600,500),30),
          Hole((100,100),30),
@@ -246,7 +254,7 @@ while running:
                     last_pos = pygame.mouse.get_pos()
                     mouse_position = pygame.mouse.get_pos()
                     target_x, target_y = last_pos
-                
+
 
 
 
@@ -254,7 +262,7 @@ while running:
             if drawing:
                 mouse_position = pygame.mouse.get_pos()
                 x, y = mouse_position
-                
+
         elif event.type == pygame.MOUSEBUTTONUP:
             # Calculate velocity based on length of drag, we use -1 index since the newest projectile will always be at the end of the projectiles list
             if len(projectiles) !=0:
@@ -269,7 +277,10 @@ while running:
 
 
 
+
     
+
+
     # Draw the planets
     planet = planets[0]
     pygame.draw.circle(screen, "black", planet.position, planet.radius)
@@ -281,6 +292,11 @@ while running:
 
     hole = holes[0]
     pygame.draw.circle(screen, "yellow", hole.position, hole.radius)
+
+    # Draw the obstacles:
+    obstacle = obstacles[0]
+    obstacle_rect = pygame.draw.line(screen, "purple", obstacle.start_pos, obstacle.end_pos, obstacle.width)
+
 
 
     # Draw the starting zone
@@ -316,7 +332,7 @@ while running:
     if drawing:
         if last_pos != pygame.mouse.get_pos():
             drag_effect = pygame.draw.line(screen, "white", last_pos, mouse_position, 3)
-            
+
     elif not drawing:
         if last_pos != mouse_position:
             # Slingshot animation
@@ -327,18 +343,21 @@ while running:
             y += diff_y / 3
             drag_effect = pygame.draw.line(screen, "white", (x,y), last_pos, 3)
             #mouse_position = (round(x),round(y))
-    
+
 
     # Draw all circles stored in the list
     for projectile in projectiles:
 
         # IMAGE CONNECTED TO THE CIRCLE
-        pygame.draw.circle(screen,"light blue", projectile.position, projectile.radius)
+        projectile_rect = pygame.draw.circle(screen,"light blue", projectile.position, projectile.radius)
         my_image = pygame.image.load("pictures/earth.png")
         my_image = pygame.transform.scale(my_image, (projectile.radius*2+10, projectile.radius*2+5))
         circular_image = pygame.Surface((1, 1), pygame.SRCALPHA)
         image_rect = my_image.get_rect(center=projectile.position)
         screen.blit(my_image, image_rect)
+
+        if projectile_rect.colliderect(obstacle_rect):
+            projectiles.remove(projectile)
 
 
         if projectile.velocity != 0:
@@ -346,6 +365,7 @@ while running:
             projectile.velocity = (projectile.velocity[0] + gravitational_acceleration(projectile.position, planets[0])[0]), (projectile.velocity[1] + gravitational_acceleration(projectile.position, planets[0])[1])
         if distance_calc(projectile.position,planet.position) <= projectile.radius + planet.radius:
             projectiles.remove(projectile)
+
         if projectile.position[0] >= 850 or projectile.position[0] <= -50 or projectile.position[1] >= 650 or projectile.position[1] <=-50:
             projectiles.remove(projectile)
         if distance_calc(projectile.position,hole.position) <= projectile.radius + hole.radius:
@@ -374,10 +394,10 @@ while running:
                 for i in times:
                     if i < best_i:
                         best_i = i
-                if calcul > best_i:
+                if calcul < best_i:
                     print("world record!")
 
-                if calcul > times[position]:
+                if calcul < times[position]:
                     times[position] = calcul
                     print("personal Best!")
                     connexion = sqlite3.connect(key)
@@ -395,6 +415,7 @@ while running:
 
             else:
                 projectiles.clear()
+                obstacles.pop(0)
                 planets.pop(0)
                 holes.pop(0)
                 positions.pop(0)
