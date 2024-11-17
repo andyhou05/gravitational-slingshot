@@ -78,15 +78,43 @@ def signup():
     confirm = Button(fen,text="Confirm",font=police,command= lambda: database_info(id_generated,name.get()))
     confirm.place(relx=.5,rely=.8,anchor=CENTER)
 
+def clear_database():
+    """
+    This function clears all data from the leaderboard table in the database.
+    """
+    connexion = sqlite3.connect(key)
+    cursor = connexion.cursor()
+    cursor.execute("DELETE FROM leaderboard")
+    connexion.commit()
+    connexion.close()
+    print("Database cleared successfully!")
+
+
+
+
 def leaderboard_list():
     connexion = sqlite3.connect(key)
     cursor = connexion.cursor()
     times_result = cursor.execute("SELECT time FROM leaderboard")
-    times_list = [row[0] for row in times_result]
+    times_list = [round(row[0], 3) for row in times_result]
     connexion.commit()
     connexion.close()
-    return print(times_list)
-leaderboard_list()
+    leaders = sorted(times_list)[0:10]
+
+
+    # makes a toplevel to show top ten times:
+    # Create the TopLevel window
+    top = tkinter.Toplevel()
+    top.title("Leaderboard")
+    top.geometry("400x400")  # Set window size
+
+    # Create 10 labels, numbered from 1 to 10
+    for i in range(1, 11):
+        label = tkinter.Label(top, text=f"{i}) "+ str(leaders[i-1]) + " seconds", font=("Comic Sans MS", 12))
+        label.pack(pady=5)  # Add some space between labels
+
+
+
 def database_info(value_id,value_name):
     global id,name,timer
     data = (value_id,value_name,math.inf)
@@ -158,11 +186,6 @@ def signin():
 
     confirm = Button(fen,text="Confirm",font=police,command=lambda:confirmation(ID.get(),name.get()))
     confirm.place(relx=.5,rely=.8,anchor=CENTER)
-
-
-
-def board_stats():
-    pass
 
 
 sign_in = Button(fen,text="Sign in",font=police,bg="gray",width=8,command=signin)
