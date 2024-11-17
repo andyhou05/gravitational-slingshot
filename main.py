@@ -266,12 +266,13 @@ while running:
             if drawing:
                 mouse_position = pygame.mouse.get_pos()
                 x, y = mouse_position
+        elif drawing == True:
+            if event.type == pygame.MOUSEBUTTONUP:
+                # Calculate velocity based on length of drag, we use -1 index since the newest projectile will always be at the end of the projectiles list
+                drawing = False
 
-        elif event.type == pygame.MOUSEBUTTONUP:
-            # Calculate velocity based on length of drag, we use -1 index since the newest projectile will always be at the end of the projectiles list
-            if len(projectiles) !=0:
-                projectiles[-1].velocity = calculate_velocity(mouse_position, last_pos)
-            drawing = False
+                if len(projectiles) !=0:
+                    projectiles[-1].velocity = calculate_velocity(mouse_position, last_pos)
 
 
 
