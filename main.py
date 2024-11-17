@@ -194,27 +194,30 @@ projectiles = []
 # Store the planet objects
 planets = [Planet((200,100),50),
            Planet((400, 300), 50),
-           Planet((400, 200), 50),
-           Planet((250, 270), 30),]
+           Planet((350, 300), 30),
+           Planet((250, 270), 30),
+           Planet((400, 200), 50)]
 
 # Store the obstacles:
 obstacles = [Obstacle((0,0), (0,0)),
              Obstacle((0, 0), (0, 0)),
-             Obstacle((400, 260), (400, 600)),
-             Obstacle((290, 270), (800, 270))
-             ]
+             Obstacle((300, 300), (200, 300)),
+             Obstacle((290, 270), (800, 270)),
+             Obstacle((400, 260), (400, 600))]
 
 # Store the holes
 holes = [Hole((600,500),30),
          Hole((100,100),30),
-         Hole((100,400),30),
-         Hole((390,150),30)]
+         Hole((100, 300), 30),
+         Hole((390,150),30),
+         Hole((100,400),30)]
 
 # Store starting positions
 positions = [Start((100,400)),
              Start((500, 400)),
-             Start((500,400)),
-             Start((290,420))]
+             Start((500, 250)),
+             Start((290,420)),
+             Start((500,400))]
 
 # Colors:
 RED = (255, 0, 0)  # For planets
@@ -286,13 +289,29 @@ while running:
     planet = planets[0]
     pygame.draw.circle(screen, "black", planet.position, planet.radius)
     my_image = pygame.image.load("pictures/sun.png")
-    my_image = pygame.transform.scale(my_image, (planet.radius*2+10, planet.radius*2+5))
+    my_image = pygame.transform.scale(my_image, (planet.radius*2+50, planet.radius*2+50))
     circular_image = pygame.Surface((50, 50), pygame.SRCALPHA)
     image_rect = my_image.get_rect(center=planet.position)
     screen.blit(my_image, image_rect)
 
     hole = holes[0]
-    pygame.draw.circle(screen, "yellow", hole.position, hole.radius)
+    circular_image = pygame.Surface((hole.radius*2 + 10, hole.radius*2 + 5), pygame.SRCALPHA)
+
+    # Draw the circle on the transparent surface
+    pygame.draw.circle(circular_image, (0, 0, 0, 0), (hole.radius + 5, hole.radius + 5), hole.radius)  # Transparent circle
+
+    # Load and scale the image
+    my_image = pygame.image.load("pictures/hole.png")
+    my_image = pygame.transform.scale(my_image, (hole.radius*2 + 10, hole.radius*2 + 5))
+
+    # Get the rect for positioning the image
+    image_rect = my_image.get_rect(center=hole.position)
+
+    # Blit the image onto the transparent surface
+    circular_image.blit(my_image, (0, 0))
+
+    # Blit the circular surface with transparency to the main screen
+    screen.blit(circular_image, image_rect)
 
     # Draw the obstacles:
     obstacle = obstacles[0]
