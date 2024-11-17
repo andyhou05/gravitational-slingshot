@@ -8,6 +8,7 @@ from models.start import Start
 import sqlite3
 from tkinter import*
 import random
+import time
 
 
 # CREATING DATABASE
@@ -30,9 +31,15 @@ police = ("Comic sans MS",20,"bold")
 title = Label(fen,text="Welcome to Space Putt!",font=police)
 title.place(relx=.5,rely=.2,anchor=CENTER)
 
+#VALUES FOR DATABASE
+id = None
+name = ""
+timer = 0
+ids = []
 
 
 def signup():
+    global ids
     for items in clear_list:
         items.destroy()
 
@@ -60,9 +67,13 @@ def signup():
 
 
 
-def database_info(id,name):
-    data = (id,name,0)
-    print(data)
+def database_info(value_id,value_name):
+    global id,name,timer
+    data = (value_id,value_name,0)
+
+    id = value_id
+    name = value_name
+    timer = 0
     connexion = sqlite3.connect(key)
     cursor = connexion.cursor()
     cursor.execute("INSERT INTO leaderboard(id,nom,time) VALUES (?,?,?)",data)
@@ -71,9 +82,10 @@ def database_info(id,name):
     connexion.close()
     fen.destroy()
 
-def confirmation(id,nom):
-    #ids
-    print(id,nom)
+def confirmation(value_id,value_nom):
+    global ids,id,name
+    id = value_id
+    nom = value_nom
     connexion = sqlite3.connect(key)
     cursor = connexion.cursor()
     result = cursor.execute("SELECT id FROM leaderboard")
@@ -88,9 +100,9 @@ def confirmation(id,nom):
     connexion.commit()
     connexion.close()
     try:
-        if int(id) in ids:
-            pos = ids.index(int(id))
-            if nom == names[pos]:
+        if int(value_id) in ids:
+            pos = ids.index(int(value_id))
+            if value_nom == names[pos]:
                 fen.destroy()
         else:
             top = Toplevel(fen,width=200,height=200)
@@ -104,6 +116,7 @@ def confirmation(id,nom):
 
 
 def signin():
+
     for items in clear_list:
         items.destroy()
     info_id = Label(fen, text=f"Enter your ID and name", font=police)
@@ -146,10 +159,16 @@ fen.mainloop()
 #START OF THE GAME
 
 
+# VERIFYING PLAYER ID AND ALL INFO
+if id is None:
+    print("user needs to log in")
+    exit()
 
 
 
+# STARTING TIMER
 
+start = time.time()
 
 
 
@@ -214,6 +233,9 @@ mouse_position = (0,0)
 
 # Level_counter
 level = 1
+# game counter
+end = 0
+
 
 
 
@@ -255,17 +277,40 @@ while running:
     screen.blit(bg,(0,0))
 
 
+
+
+
+
+    
+
+
     # Draw the planets
     planet = planets[0]
     pygame.draw.circle(screen, "black", planet.position, planet.radius)
     my_image = pygame.image.load("pictures/sun.png")
-    my_image = pygame.transform.scale(my_image, (planet.radius*2+10, planet.radius*2+5))
+    my_image = pygame.transform.scale(my_image, (planet.radius*2+50, planet.radius*2+50))
     circular_image = pygame.Surface((50, 50), pygame.SRCALPHA)
     image_rect = my_image.get_rect(center=planet.position)
     screen.blit(my_image, image_rect)
 
     hole = holes[0]
-    pygame.draw.circle(screen, "yellow", hole.position, hole.radius)
+    circular_image = pygame.Surface((hole.radius*2 + 10, hole.radius*2 + 5), pygame.SRCALPHA)
+
+    # Draw the circle on the transparent surface
+    pygame.draw.circle(circular_image, (0, 0, 0, 0), (hole.radius + 5, hole.radius + 5), hole.radius)  # Transparent circle
+
+    # Load and scale the image
+    my_image = pygame.image.load("pictures/hole.png")
+    my_image = pygame.transform.scale(my_image, (hole.radius*2 + 10, hole.radius*2 + 5))
+
+    # Get the rect for positioning the image
+    image_rect = my_image.get_rect(center=hole.position)
+
+    # Blit the image onto the transparent surface
+    circular_image.blit(my_image, (0, 0))
+
+    # Blit the circular surface with transparency to the main screen
+    screen.blit(circular_image, image_rect)
 
     # Draw the obstacles:
     obstacle = obstacles[0]
@@ -345,7 +390,48 @@ while running:
         if distance_calc(projectile.position,hole.position) <= projectile.radius + hole.radius:
 
             if len(planets) == 1:
+                ending = 1
+                projectiles.remove(projectile)
                 print("u finished")
+                end = time.time()
+                calcul = end-start
+                print(calcul)
+                connexion = sqlite3.connect(key)
+                cursor = connexion.cursor()
+                results = cursor.execute("SELECT time FROM leaderboard")
+                times = [row[0] for row in results]
+                connexion.commit()
+                connexion.close()
+                connexion = sqlite3.connect(key)
+                cursor = connexion.cursor()
+                results1 = cursor.execute("SELECT id FROM leaderboard")
+                ids = [row[0] for row in results1]
+                connexion.commit()
+                connexion.close()
+                position = ids.index(int(id))
+                best_i = 0
+                for i in times:
+                    if i < best_i:
+                        best_i = i
+                if calcul < best_i:
+                    print("world record!")
+
+                if calcul < times[position]:
+                    times[position] = calcul
+                    print("personal Best!")
+                    connexion = sqlite3.connect(key)
+                    cursor = connexion.cursor()
+                    results1 = cursor.execute("UPDATE leaderboard SET time = (?) WHERE id = (?)",(calcul,id))
+                    ids = [row[0] for row in results1]
+                    connexion.commit()
+                    connexion.close()
+
+
+
+
+
+
+
             else:
                 projectiles.clear()
                 obstacles.pop(0)
@@ -374,7 +460,9 @@ while running:
     text = f"Level {level}"
     text_surface = font.render(text, True, "white")
     screen.blit(text_surface,(350,50))
-
+    text = f"time: {(time.time()-start):.2f}"
+    timer = font.render(text, True, "white")
+    screen.blit(timer, (600, 50))
     # Flip the display to put your work on the screen
     pygame.display.flip()
 
