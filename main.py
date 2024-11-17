@@ -171,7 +171,7 @@ sign_in.place(relx=.8,rely=.5,anchor=CENTER)
 create_account = Button(fen,text="Create account",font=police,bg="gray",width= 12 , command=signup)
 create_account.place(relx=.3,rely=.5,anchor=CENTER)
 
-leaderboard = Button(fen, text="Leaderboard", font  = police, bg = "gold", width=15, command = board_stats)
+leaderboard = Button(fen, text="Leaderboard", font  = police, bg = "gold", width=15, command = leaderboard_list)
 leaderboard.place(relx = 0.5, rely = 0.8, anchor = CENTER)
 
 
