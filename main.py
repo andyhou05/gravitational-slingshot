@@ -11,7 +11,6 @@ import random
 import time
 import subprocess
 import sys
-import customtkinter
 
 # CREATING DATABASE
 key = "Leaderboard.db"
@@ -26,7 +25,7 @@ connexion.close()
 
 # main menu for connection
 clear_list = []
-fen = customtkinter.CTk()
+fen = Tk()
 fen.geometry("400x300")
 fen.title("Space Putt")
 police = ("Comic sans MS",20,"bold")
@@ -64,7 +63,7 @@ def signup():
     name = Entry(fen,font=police)
     name.place(relx=.5,rely=.6,anchor=CENTER)
 
-    confirm = customtkinter.CTkButton(fen,text="Confirm",font=police,command= lambda: database_info(id_generated,name.get()))
+    confirm = Button(fen,text="Confirm",font=police,command= lambda: database_info(id_generated,name.get()))
     confirm.place(relx=.5,rely=.8,anchor=CENTER)
 
 
@@ -135,7 +134,7 @@ def signin():
     nom_label = Label(fen,text="Name:",font=police2)
     nom_label.place(relx=.2,rely=.6,anchor=CENTER)
 
-    confirm = customtkinter.CTkButton(fen,text="Confirm",font=police,command=lambda:confirmation(ID.get(),name.get()))
+    confirm = Button(fen,text="Confirm",font=police,command=lambda:confirmation(ID.get(),name.get()))
     confirm.place(relx=.5,rely=.8,anchor=CENTER)
 
 
@@ -143,10 +142,10 @@ def signin():
 
 
 
-sign_in = customtkinter.CTkButton(fen,text="Sign in",font=police,bg_color="gray",width=12,command=signin)
+sign_in = Button(fen,text="Sign in",font=police,bg="gray",width=12,command=signin)
 sign_in.place(relx=.5,rely=.5,anchor=CENTER)
 
-create_account = customtkinter.CTkButton(fen,text="Create account",font=police,bg_color="gray",command=signup)
+create_account = Button(fen,text="Create account",font=police,bg="gray",command=signup)
 create_account.place(relx=.5,rely=.8,anchor=CENTER)
 
 
