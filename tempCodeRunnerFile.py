@@ -1,1 +1,1 @@
-ear
+obstacle_rect

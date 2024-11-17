@@ -251,34 +251,34 @@ projectiles = []
 
 # Store the planet objects
 planets = [Planet((200,100),50),
-           #Planet((400, 300), 50),
-           #Planet((350, 300), 30),
-           #Planet((250, 270), 30),
-           #Planet((400, 200), 50)
+           Planet((400, 300), 50),
+           Planet((350, 300), 30),
+           Planet((250, 270), 30),
+           Planet((400, 200), 50)
            ]
 
 # Store the obstacles:
 obstacles = [Obstacle((0,0), (0,0)),
-             #Obstacle((0, 0), (0, 0)),
-             #Obstacle((300, 300), (200, 300)),
-             #Obstacle((290, 270), (800, 270)),
-             #Obstacle((400, 260), (400, 600))
+             Obstacle((0, 0), (0, 0)),
+             Obstacle((300, 300), (200, 300)),
+             Obstacle((290, 270), (800, 270)),
+             Obstacle((400, 260), (400, 600))
             ]
 
 # Store the holes
 holes = [Hole((600,500),30),
-         #Hole((100,100),30),
-         #Hole((100, 300), 30),
-         #Hole((390,150),30),
-         #Hole((100,400),30)
+         Hole((100,100),30),
+         Hole((100, 300), 30),
+         Hole((390,150),30),
+         Hole((100,400),30)
         ]
 
 # Store starting positions
 positions = [Start((100,400)),
-             #Start((500, 400)),
-             #Start((500, 250)),
-             #Start((290,420)),
-             #Start((500,400))
+             Start((500, 400)),
+             Start((500, 250)),
+             Start((290,420)),
+             Start((500,400))
             ]
 
 # Colors:
@@ -401,6 +401,9 @@ while running:
 
         # Check collision
         if distance_calc(projectile.position, planet.position) <= projectile.radius + planet.radius:
+            projectiles.remove(projectile)
+            
+        if projectile_rect.colliderect(obstacle_rect):
             projectiles.remove(projectile)
 
         if projectile.velocity != 0:
