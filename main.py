@@ -197,22 +197,31 @@ if id is None:
 
 start = time.time()
 
+# CONSTANTS
+WIDTH = 800
+LENGTH = 600
+
+STARTING_ZONE_WIDTH = 200
+STARTING_ZONE_LENGTH = 150
+
+VELOCITY_SCALE = 50
 
 
-
-# pygame setup
+# Pygame setup
 pygame.init()
-screen = pygame.display.set_mode((800, 600))
+screen = pygame.display.set_mode((WIDTH, LENGTH))
 pygame.display.set_caption("Space Putt")
 clock = pygame.time.Clock()
 running = True
 
+# Images
 bg = pygame.image.load("pictures/hackaton_background.png")
-bg = pygame.transform.scale(bg, (800, 600))
+bg = pygame.transform.scale(bg, (WIDTH, LENGTH))
 
-# Explosion gif
-explosion = pygame.image.load("pictures/explosion.gif")
-explosion = pygame.transform.scale(explosion, (50, 50))
+earth_image = pygame.image.load("pictures/earth.png") 
+sun_image = pygame.image.load("pictures/sun.png")
+hole_image = pygame.image.load("pictures/hole.png")
+grass_image = pygame.image.load("pictures/grass.png")
 
 # Store the projectile objects
 projectiles = []
@@ -231,7 +240,7 @@ obstacles = [Obstacle((0,0), (0,0)),
              #Obstacle((300, 300), (200, 300)),
              #Obstacle((290, 270), (800, 270)),
              #Obstacle((400, 260), (400, 600))
-    ]
+            ]
 
 # Store the holes
 holes = [Hole((600,500),30),
@@ -239,7 +248,7 @@ holes = [Hole((600,500),30),
          #Hole((100, 300), 30),
          #Hole((390,150),30),
          #Hole((100,400),30)
-         ]
+        ]
 
 # Store starting positions
 positions = [Start((100,400)),
@@ -247,17 +256,17 @@ positions = [Start((100,400)),
              #Start((500, 250)),
              #Start((290,420)),
              #Start((500,400))
-]
+            ]
 
 # Colors:
 RED = (255, 0, 0)  # For planets
 BLUE = (0, 0, 255) # For user body
 
-# drag effect
+# Drag effect
 last_pos = (0,0)
 drawing = False
-x = 0
-y = 0
+mouse_x = 0
+mouse_y = 0
 target_x = 0
 target_y = 0
 mouse_position = (0,0)
@@ -267,11 +276,7 @@ level = 1
 # game counter
 end = 0
 
-
-
-
-
-
+# Game loop
 while running:
     # Poll for events
     for event in pygame.event.get():
@@ -281,7 +286,7 @@ while running:
         # Create a new projectile with every mouse click
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:  # Left mouse button
-                if event.pos[0] >= positions[0].position[0] and event.pos[0] <= positions[0].position[0]+200 and event.pos[1] >= positions[0].position[1] and event.pos[1] <= positions[0].position[1]+150:
+                if event.pos[0] >= positions[0].position[0] and event.pos[0] <= positions[0].position[0]+STARTING_ZONE_WIDTH and event.pos[1] >= positions[0].position[1] and event.pos[1] <= positions[0].position[1]+STARTING_ZONE_LENGTH:
                     projectile = Projectile(position = pygame.mouse.get_pos(), radius = 25)
                     projectiles.append(projectile)
                     drawing = True
@@ -289,50 +294,31 @@ while running:
                     mouse_position = pygame.mouse.get_pos()
                     target_x, target_y = last_pos
 
-
-
-
+        # Update the mouse position to draw the line
         elif event.type == pygame.MOUSEMOTION:
             if drawing:
                 mouse_position = pygame.mouse.get_pos()
-                x, y = mouse_position
+                mouse_x, mouse_y = mouse_position
+                
+        # Calculate the velocity when there is an appropriate click in the starting zone
         elif drawing == True:
             if event.type == pygame.MOUSEBUTTONUP:
                 # Calculate velocity based on length of drag, we use -1 index since the newest projectile will always be at the end of the projectiles list
                 drawing = False
 
-
                 if len(projectiles) !=0:
                     projectiles[-1].velocity = calculate_velocity(mouse_position, last_pos)
 
-        elif drawing == True:
-            if event.type == pygame.MOUSEBUTTONUP:
-                # Calculate velocity based on length of drag, we use -1 index since the newest projectile will always be at the end of the projectiles list
-                if len(projectiles) !=0:
-                    projectiles[-1].velocity = calculate_velocity(mouse_position, last_pos)
-                drawing = False
-
-
-
-
+    # Draw background
     screen.blit(bg,(0,0))
-
-
-
-
-
-
-
-
 
     # Draw the planets
     planet = planets[0]
     pygame.draw.circle(screen, "black", planet.position, planet.radius)
-    my_image = pygame.image.load("pictures/sun.png")
-    my_image = pygame.transform.scale(my_image, (planet.radius*2+50, planet.radius*2+50))
+    sun_image = pygame.transform.scale(sun_image, (planet.radius*2+50, planet.radius*2+50))
     circular_image = pygame.Surface((50, 50), pygame.SRCALPHA)
-    image_rect = my_image.get_rect(center=planet.position)
-    screen.blit(my_image, image_rect)
+    image_rect = sun_image.get_rect(center=planet.position)
+    screen.blit(sun_image, image_rect)
 
     hole = holes[0]
     circular_image = pygame.Surface((hole.radius*2 + 10, hole.radius*2 + 5), pygame.SRCALPHA)
@@ -341,14 +327,13 @@ while running:
     pygame.draw.circle(circular_image, (0, 0, 0, 0), (hole.radius + 5, hole.radius + 5), hole.radius)  # Transparent circle
 
     # Load and scale the image
-    my_image = pygame.image.load("pictures/hole.png")
-    my_image = pygame.transform.scale(my_image, (hole.radius*2 + 10, hole.radius*2 + 5))
+    hole_image = pygame.transform.scale(hole_image, (hole.radius*2 + 10, hole.radius*2 + 5))
 
     # Get the rect for positioning the image
-    image_rect = my_image.get_rect(center=hole.position)
+    image_rect = hole_image.get_rect(center=hole.position)
 
     # Blit the image onto the transparent surface
-    circular_image.blit(my_image, (0, 0))
+    circular_image.blit(hole_image, (0, 0))
 
     # Blit the circular surface with transparency to the main screen
     screen.blit(circular_image, image_rect)
@@ -357,38 +342,16 @@ while running:
     obstacle = obstacles[0]
     obstacle_rect = pygame.draw.line(screen, "purple", obstacle.start_pos, obstacle.end_pos, obstacle.width)
 
-
-
     # Draw the starting zone
     start_position = positions[0]
-    ellipse_width, ellipse_height = 200, 150
-
-    # Create a transparent surface for the ellipse
-    ellipse_surface = pygame.Surface((ellipse_width, ellipse_height), pygame.SRCALPHA)
-
-    # Draw the ellipse on the transparent surface
-    pygame.draw.ellipse(ellipse_surface, (255, 255, 255, 255), (0, 0, ellipse_width, ellipse_height))
-
-    # Load and scale the image
-    my_image = pygame.image.load("pictures/grass.png")
-    my_image = pygame.transform.scale(my_image, (ellipse_width, ellipse_height))
-
-    # Blit the image onto the ellipse surface
-    ellipse_surface.blit(my_image, (0,0), special_flags=pygame.BLEND_RGBA_MIN)
-
-    # Draw the elliptical image onto the main screen
+    ellipse_surface = pygame.Surface((STARTING_ZONE_WIDTH, STARTING_ZONE_LENGTH), pygame.SRCALPHA)
+    pygame.draw.ellipse(ellipse_surface, (255, 255, 255, 255), (0, 0, STARTING_ZONE_WIDTH, STARTING_ZONE_LENGTH))
+    grass_image = pygame.transform.scale(grass_image, (STARTING_ZONE_WIDTH, STARTING_ZONE_LENGTH))
+    ellipse_surface.blit(grass_image, (0,0), special_flags=pygame.BLEND_RGBA_MIN)
     ellipse_rect = ellipse_surface.get_rect(topleft=start_position.position)
     screen.blit(ellipse_surface, ellipse_rect)
 
-    # Draw all circles stored in the list
-    for projectile in projectiles:
-        pygame.draw.circle(screen, BLUE, projectile.position, projectile.radius)
-        if projectile.velocity != 0:
-            projectile.position = ((projectile.position[0] + projectile.velocity[0]/50), (projectile.position[1] + projectile.velocity[1]/50))
-            projectile.velocity = (projectile.velocity[0] + gravitational_acceleration(projectile.position, planets[0])[0]), (projectile.velocity[1] + gravitational_acceleration(projectile.position, planets[0])[1])
-        if distance_calc(projectile.position, planet.position) <= projectile.radius + planet.radius:
-            projectiles.remove(projectile)
-
+    # Draw the line
     if drawing:
         if last_pos != pygame.mouse.get_pos():
             drag_effect = pygame.draw.line(screen, "white", last_pos, mouse_position, 3)
@@ -396,47 +359,44 @@ while running:
     elif not drawing:
         if last_pos != mouse_position:
             # Slingshot animation
-
-            diff_x = target_x - x
-            x += diff_x / 3
-            diff_y = target_y - y
-            y += diff_y / 3
-            drag_effect = pygame.draw.line(screen, "white", (x,y), last_pos, 3)
-            #mouse_position = (round(x),round(y))
+            diff_x = target_x - mouse_x
+            mouse_x += diff_x / 3
+            diff_y = target_y - mouse_y
+            mouse_y += diff_y / 3
+            drag_effect = pygame.draw.line(screen, "white", (mouse_x,mouse_y), last_pos, 3)
 
 
-    # Draw all circles stored in the list
+    # Update the projectiles (drawing, velocity, position, collisions)
     for projectile in projectiles:
 
         # IMAGE CONNECTED TO THE CIRCLE
         projectile_rect = pygame.draw.circle(screen,"light blue", projectile.position, projectile.radius)
-        my_image = pygame.image.load("pictures/earth.png")
-        my_image = pygame.transform.scale(my_image, (projectile.radius*2+10, projectile.radius*2+5))
+        earth_image = pygame.transform.scale(earth_image, (projectile.radius*2+10, projectile.radius*2+5))
         circular_image = pygame.Surface((1, 1), pygame.SRCALPHA)
-        image_rect = my_image.get_rect(center=projectile.position)
-        screen.blit(my_image, image_rect)
+        image_rect = earth_image.get_rect(center=projectile.position)
+        screen.blit(earth_image, image_rect)
 
+        # Check collision
         if projectile_rect.colliderect(obstacle_rect):
             projectiles.remove(projectile)
 
-
         if projectile.velocity != 0:
-            projectile.position = ((projectile.position[0] + projectile.velocity[0]/50), (projectile.position[1] + projectile.velocity[1]/50))
+            # Update position and velocity
+            projectile.position = ((projectile.position[0] + projectile.velocity[0]/VELOCITY_SCALE), (projectile.position[1] + projectile.velocity[1]/VELOCITY_SCALE))
             projectile.velocity = (projectile.velocity[0] + gravitational_acceleration(projectile.position, planets[0])[0]), (projectile.velocity[1] + gravitational_acceleration(projectile.position, planets[0])[1])
-        if distance_calc(projectile.position,planet.position) <= projectile.radius + planet.radius:
-            projectiles.remove(projectile)
 
+        # Remove out of screen projectiles
         if projectile.position[0] >= 850 or projectile.position[0] <= -50 or projectile.position[1] >= 650 or projectile.position[1] <=-50:
             projectiles.remove(projectile)
+            
+        # Projectile reaches goal
         if distance_calc(projectile.position,hole.position) <= projectile.radius + hole.radius:
 
             if len(planets) == 1:
                 ending = 1
                 projectiles.remove(projectile)
-                print("u finished")
                 end = time.time()
                 calcul = end-start
-                print(calcul)
                 connexion = sqlite3.connect(key)
                 cursor = connexion.cursor()
                 results = cursor.execute("SELECT time FROM leaderboard")
