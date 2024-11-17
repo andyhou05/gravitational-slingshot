@@ -73,11 +73,18 @@ def signup():
     confirm = Button(fen,text="Confirm",font=police,command= lambda: database_info(id_generated,name.get()))
     confirm.place(relx=.5,rely=.8,anchor=CENTER)
 
-
-
+def leaderboard_list():
+    connexion = sqlite3.connect(key)
+    cursor = connexion.cursor()
+    times_result = cursor.execute("SELECT time FROM leaderboard")
+    times_list = [row[0] for row in times_result]
+    connexion.commit()
+    connexion.close()
+    return print(times_list)
+leaderboard_list()
 def database_info(value_id,value_name):
     global id,name,timer
-    data = (value_id,value_name,0)
+    data = (value_id,value_name,math.inf)
 
     id = value_id
     name = value_name
