@@ -1,3 +1,5 @@
+import tkinter
+
 import pygame
 from models.projectile import Projectile
 from models.planet import Planet
@@ -41,6 +43,9 @@ ids = []
 
 def signup():
     global ids
+    global leaderboard
+    leaderboard.destroy()
+
     for items in clear_list:
         items.destroy()
 
@@ -118,6 +123,9 @@ def confirmation(value_id,value_nom):
 
 def signin():
 
+    global leaderboard
+    leaderboard.destroy()
+
     for items in clear_list:
         items.destroy()
     info_id = Label(fen, text=f"Enter your ID and name", font=police)
@@ -139,14 +147,18 @@ def signin():
 
 
 
+def board_stats():
+    pass
 
 
+sign_in = Button(fen,text="Sign in",font=police,bg="gray",width=8,command=signin)
+sign_in.place(relx=.8,rely=.5,anchor=CENTER)
 
-sign_in = Button(fen,text="Sign in",font=police,bg="gray",width=12,command=signin)
-sign_in.place(relx=.5,rely=.5,anchor=CENTER)
+create_account = Button(fen,text="Create account",font=police,bg="gray",width= 12 , command=signup)
+create_account.place(relx=.3,rely=.5,anchor=CENTER)
 
-create_account = Button(fen,text="Create account",font=police,bg="gray",command=signup)
-create_account.place(relx=.5,rely=.8,anchor=CENTER)
+leaderboard = Button(fen, text="Leaderboard", font  = police, bg = "gold", width=15, command = board_stats)
+leaderboard.place(relx = 0.5, rely = 0.8, anchor = CENTER)
 
 
 clear_list.append(title)
@@ -193,31 +205,35 @@ projectiles = []
 
 # Store the planet objects
 planets = [Planet((200,100),50),
-           Planet((400, 300), 50),
-           Planet((350, 300), 30),
-           Planet((250, 270), 30),
-           Planet((400, 200), 50)]
+           #Planet((400, 300), 50),
+           #Planet((350, 300), 30),
+           #Planet((250, 270), 30),
+           #Planet((400, 200), 50)
+           ]
 
 # Store the obstacles:
 obstacles = [Obstacle((0,0), (0,0)),
-             Obstacle((0, 0), (0, 0)),
-             Obstacle((300, 300), (200, 300)),
-             Obstacle((290, 270), (800, 270)),
-             Obstacle((400, 260), (400, 600))]
+             #Obstacle((0, 0), (0, 0)),
+             #Obstacle((300, 300), (200, 300)),
+             #Obstacle((290, 270), (800, 270)),
+             #Obstacle((400, 260), (400, 600))
+    ]
 
 # Store the holes
 holes = [Hole((600,500),30),
-         Hole((100,100),30),
-         Hole((100, 300), 30),
-         Hole((390,150),30),
-         Hole((100,400),30)]
+         #Hole((100,100),30),
+         #Hole((100, 300), 30),
+         #Hole((390,150),30),
+         #Hole((100,400),30)
+         ]
 
 # Store starting positions
 positions = [Start((100,400)),
-             Start((500, 400)),
-             Start((500, 250)),
-             Start((290,420)),
-             Start((500,400))]
+             #Start((500, 400)),
+             #Start((500, 250)),
+             #Start((290,420)),
+             #Start((500,400))
+]
 
 # Colors:
 RED = (255, 0, 0)  # For planets
@@ -429,11 +445,32 @@ while running:
                     connexion.close()
                 pygame.quit()
                 ################################################################# TOOOOOOOOO CHANGE
-                question = input("Would you like to continue? ")
-                if question == "yes":
+
+
+                def return_main_menu():
+                    new_window.destroy()
                     subprocess.run([sys.executable] + sys.argv)
-                else:
+
+                def close():
                     exit()
+
+                new_window = Tk()
+                new_window.geometry("400x300")
+                new_window.title("YOU WON!")
+
+                label1 = Label(new_window, text = ("CONGRATS! COMPLETED IN "+ str(round(calcul)) + " SECONDS"), font= ("Comix Sans MS", 14, "bold"))
+                label1.place(relx = 0.5, rely = 0.1, anchor = tkinter.CENTER)
+
+                label2 = Label(new_window, text="(Will you return to the main menu?)", font=("Comix Sans MS", 12))
+                label2.place(relx=0.5, rely=0.2, anchor=tkinter.CENTER)
+
+                button1 = Button(new_window, text = "Yes",font= ("Comic sans MS",20) ,command = return_main_menu)
+                button1.place(relx = 0.3, rely = 0.5, anchor = tkinter.CENTER)
+
+                button3 = Button(new_window, text="No", font=("Comic sans MS", 20), command = close)
+                button3.place(relx=0.7, rely=0.5, anchor=tkinter.CENTER)
+
+                new_window.mainloop()
 
 
 
@@ -446,18 +483,6 @@ while running:
                 holes.pop(0)
                 positions.pop(0)
                 level += 1
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

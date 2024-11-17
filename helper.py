@@ -1,5 +1,6 @@
 import math
 from models.planet import Planet
+from tkinter import *
 
 ## Fg = Gm1m2/r**2
 
@@ -40,25 +41,3 @@ def gravitational_acceleration(projectile_position: tuple, planet: Planet):
 
     return (acc_x, acc_y)
 
-def circle_line_collison(cx, cy, r, x1, y1, x2, y2):
-    # Vector from line start to circle center
-    acx, acy = cx - x1, cy - y1
-    # Vector of the line segment
-    abx, aby = x2 - x1, y2 - y1
-    ab_len = math.sqrt(abx ** 2 + aby ** 2)
-
-    # Project vector ac onto ab
-    projection = (acx * abx + acy * aby) / (ab_len ** 2)
-    closest_x = x1 + projection * abx
-    closest_y = y1 + projection * aby
-
-    # Ensure the closest point lies within the segment
-    if not (0 <= projection <= 1):
-        # Check distance to endpoints if projection is outside the segment
-        dist1 = math.sqrt((cx - x1) ** 2 + (cy - y1) ** 2)
-        dist2 = math.sqrt((cx - x2) ** 2 + (cy - y2) ** 2)
-        return dist1 <= r or dist2 <= r
-
-    # Distance from circle center to closest point
-    dist_to_closest = math.sqrt((closest_x - cx) ** 2 + (closest_y - cy) ** 2)
-    return dist_to_closest <= r
