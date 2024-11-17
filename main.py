@@ -92,6 +92,7 @@ def clear_database():
 
 
 
+
 def leaderboard_list():
     connexion = sqlite3.connect(key)
     cursor = connexion.cursor()
