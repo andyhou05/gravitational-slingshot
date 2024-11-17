@@ -9,7 +9,8 @@ import sqlite3
 from tkinter import*
 import random
 import time
-
+import subprocess
+import sys
 
 # CREATING DATABASE
 key = "Leaderboard.db"
@@ -278,7 +279,7 @@ while running:
 
 
 
-    
+
 
 
     # Draw the planets
@@ -406,8 +407,13 @@ while running:
                     ids = [row[0] for row in results1]
                     connexion.commit()
                     connexion.close()
-
-
+                pygame.quit()
+                ################################################################# TOOOOOOOOO CHANGE
+                question = input("Would you like to continue? ")
+                if question == "yes":
+                    subprocess.run([sys.executable] + sys.argv)
+                else:
+                    exit()
 
 
 
