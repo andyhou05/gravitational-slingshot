@@ -13,6 +13,8 @@ import random
 import time
 import subprocess
 import sys
+from PIL import Image, ImageTk
+
 
 # CREATING DATABASE
 key = "Leaderboard.db"
@@ -31,8 +33,13 @@ fen = Tk()
 fen.geometry("400x300")
 fen.title("Space Putt")
 police = ("Comic sans MS",20,"bold")
-title = Label(fen,text="Welcome to Space Putt!",font=police)
+bg = ImageTk.PhotoImage(Image.open("pictures/background.png"))
+background = Label(fen,image=bg)
+background.pack()
+title = Label(fen,text="Welcome to Space Putt!",font=police,bg="blue")
 title.place(relx=.5,rely=.2,anchor=CENTER)
+
+
 
 #VALUES FOR DATABASE
 id = None
@@ -71,11 +78,18 @@ def signup():
     confirm = Button(fen,text="Confirm",font=police,command= lambda: database_info(id_generated,name.get()))
     confirm.place(relx=.5,rely=.8,anchor=CENTER)
 
-
-
+def leaderboard_list():
+    connexion = sqlite3.connect(key)
+    cursor = connexion.cursor()
+    times_result = cursor.execute("SELECT time FROM leaderboard")
+    times_list = [row[0] for row in times_result]
+    connexion.commit()
+    connexion.close()
+    return print(times_list)
+leaderboard_list()
 def database_info(value_id,value_name):
     global id,name,timer
-    data = (value_id,value_name,0)
+    data = (value_id,value_name,math.inf)
 
     id = value_id
     name = value_name
@@ -282,6 +296,14 @@ while running:
             if drawing:
                 mouse_position = pygame.mouse.get_pos()
                 x, y = mouse_position
+        elif drawing == True:
+            if event.type == pygame.MOUSEBUTTONUP:
+                # Calculate velocity based on length of drag, we use -1 index since the newest projectile will always be at the end of the projectiles list
+                drawing = False
+
+
+                if len(projectiles) !=0:
+                    projectiles[-1].velocity = calculate_velocity(mouse_position, last_pos)
 
         elif drawing == True:
             if event.type == pygame.MOUSEBUTTONUP:
@@ -289,6 +311,7 @@ while running:
                 if len(projectiles) !=0:
                     projectiles[-1].velocity = calculate_velocity(mouse_position, last_pos)
                 drawing = False
+
 
 
 
